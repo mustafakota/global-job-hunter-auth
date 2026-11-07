@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#101216" />
+  <title>Global Job Hunter · Secure connection</title>
+  <style>
+    :root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:#101216;color:#f4f5f7}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:28px;background:radial-gradient(ellipse at 50% 0,#273449 0,transparent 58%),#101216}
+    main{width:min(100%,680px);border:1px solid #303844;border-radius:24px;background:#171c24;padding:clamp(24px,5vw,42px);box-shadow:0 24px 90px #0008}
+    .mark{width:48px;height:48px;border-radius:15px;background:#d7f5e6;color:#133927;display:grid;place-items:center;font-weight:850;font-size:22px}
+    .eyebrow{margin:24px 0 10px;color:#9ca9b9;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    h1{font-size:clamp(28px,5vw,40px);letter-spacing:-1.2px;line-height:1.08;margin:0 0 14px}
+    p{color:#adb7c4;line-height:1.7;margin:0 0 20px}
+    a{color:#a7ebc5;text-decoration:none}a:hover{text-decoration:underline}
+    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+    .button{display:inline-flex;align-items:center;justify-content:center;padding:13px 18px;border-radius:12px;background:#a5edc6;color:#123523;font-weight:700}
+    .secondary{background:#29313d;color:#eaf0f5}
+    .note{border:1px solid #343d49;border-radius:14px;padding:16px;background:#1c232d;color:#c4cbd5;font-size:14px;line-height:1.65;margin-top:26px}
+    footer{margin-top:28px;padding-top:18px;border-top:1px solid #303844;color:#85909e;font-size:12px;line-height:1.7}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="mark" aria-hidden="true">G</div>
+    <div class="eyebrow">Global Job Hunter</div>
+    <h1>Your job search, connected securely.</h1>
+    <p>This site hosts the sign-in and permission screen used when an AI assistant requests access to your Global Job Hunter account.</p>
+    <div class="actions">
+      <a class="button" href="./oauth/consent/">Open secure consent page</a>
+      <a class="button secondary" href="https://github.com/mustafakota/global-job-hunter-auth">View source on GitHub</a>
+    </div>
+    <div class="note">This site does not collect or store job applications. It uses Supabase Authentication for sign-in and approval. Your job data remains protected by your Supabase Row Level Security policies.</div>
+    <footer>Global Job Hunter · Private candidate workspace<br>Never approve a connection you do not recognize.</footer>
+  </main>
+</body>
+</html>

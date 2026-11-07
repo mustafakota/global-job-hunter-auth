@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#101216" />
+  <title>Global Job Hunter · Authorize access</title>
+  <style>
+    :root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#101216;color:#f4f5f7}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 50% 0,#243244 0,transparent 58%),#101216}
+    main{width:min(100%,560px);border:1px solid #303844;border-radius:22px;background:#171c24;padding:clamp(22px,5vw,34px);box-shadow:0 24px 90px #0008}
+    .mark{width:44px;height:44px;border-radius:14px;background:#d7f5e6;color:#133927;display:grid;place-items:center;font-weight:850;font-size:21px}
+    .eyebrow{margin:22px 0 8px;color:#9ca9b9;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    h1{font-size:26px;letter-spacing:-.7px;margin:0 0 10px;line-height:1.2}p{color:#adb7c4;line-height:1.65;margin:0 0 18px}
+    .panel{border:1px solid #343d49;border-radius:14px;padding:17px;margin:20px 0;background:#1c232d}
+    .app{font-weight:700;font-size:16px;color:#f3f5f7;overflow-wrap:anywhere}.muted{color:#929eae;font-size:12px;margin-top:5px;overflow-wrap:anywhere}
+    .section-title{color:#dce3eb;font-size:12px;font-weight:750;letter-spacing:.08em;text-transform:uppercase;margin:18px 0 8px}
+    ul{padding-left:19px;color:#d1d8e1;line-height:1.8;margin:8px 0 0}li{padding-left:3px;overflow-wrap:anywhere}
+    .capability{display:flex;gap:11px;align-items:flex-start;margin:11px 0;color:#c8d0da;font-size:14px;line-height:1.5}.tick{width:19px;height:19px;flex:0 0 19px;border-radius:50%;display:grid;place-items:center;background:#244332;color:#a5edc6;font-size:12px;font-weight:800}
+    .warning{border:1px solid #58472f;border-radius:12px;padding:13px 14px;color:#e7c995;background:#2a241b;font-size:13px;line-height:1.6;margin-top:16px}
+    label{display:block;font-size:13px;color:#cbd3de;font-weight:650;margin:13px 0 6px}input{display:block;width:100%;background:#11151b;border:1px solid #3a4552;color:#f4f5f7;border-radius:10px;padding:12px 13px;font:inherit;outline:none}input:focus{border-color:#91d9b4;box-shadow:0 0 0 3px #91d9b420}
+    .actions{display:flex;gap:10px;margin-top:22px}.actions button,.text-button{border:0;border-radius:11px;padding:13px 15px;font:inherit;font-size:14px;font-weight:750;cursor:pointer}.actions button{flex:1}.approve{background:#a5edc6;color:#123523}.deny{background:#2b333e;color:#eef1f5}.primary{width:100%;background:#a5edc6;color:#123523;margin-top:18px}.quiet{background:none;color:#a5edc6;padding:12px 0 0;width:100%;text-align:center}.text-button{background:none;color:#a5edc6;padding:12px 0 0;text-align:center;width:100%}
+    button:disabled{opacity:.5;cursor:wait}.status{min-height:22px;margin-top:14px;font-size:13px;color:#f0c780;line-height:1.5;overflow-wrap:anywhere}.error{color:#ff9e9e}.hidden{display:none!important}
+    .footer{border-top:1px solid #303844;padding-top:16px;margin-top:24px;color:#8792a0;font-size:12px;line-height:1.65}
+  </style>
+</head>
+<body>
+<main>
+  <div class="mark" aria-hidden="true">G</div>
+  <div class="eyebrow">Secure account authorization</div>
+  <h1>Connect Global Job Hunter</h1>
+  <p>Sign in to your candidate account, review the requesting application and its access, then choose whether to approve it.</p>
+
+  <section id="login-panel" class="panel hidden">
+    <div class="app">Sign in to your account</div>
+    <div class="muted">Credentials are sent directly to Supabase Authentication. This page does not store your password.</div>
+    <form id="login-form" autocomplete="on">
+      <label for="email">Email address</label>
+      <input id="email" name="email" type="email" autocomplete="username" required />
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required />
+      <button class="text-button" id="magic-link" type="button">Send me a sign-in link instead</button>
+      <button class="primary" id="sign-in" type="submit">Sign in securely</button>
+    </form>
+  </section>
+
+  <section id="consent-panel" class="panel hidden">
+    <div class="app" id="client-name">Loading application…</div>
+    <div class="muted" id="client-origin">OAuth client</div>
+    <div class="section-title">Requested OAuth scopes</div>
+    <ul id="scope-list"><li>Loading requested scopes…</li></ul>
+    <div class="section-title">What Global Job Hunter can do</div>
+    <div class="capability"><span class="tick">✓</span><span>Read your saved candidate profile, skills and job-search preferences.</span></div>
+    <div class="capability"><span class="tick">✓</span><span>Search job feeds and save matching listings to your personal job list.</span></div>
+    <div class="capability"><span class="tick">✓</span><span>View and update entries in your saved-application tracker.</span></div>
+    <div class="warning"><strong>Not permitted by this tool:</strong> submitting job applications, sending recruiter messages, creating external accounts, or making payments. Those actions require your separate approval and are not provided by this MCP server.</div>
+    <div class="actions">
+      <button class="deny" id="deny" type="button">Deny</button>
+      <button class="approve" id="approve" type="button">Approve access</button>
+    </div>
+  </section>
+
+  <div class="status" id="status" role="status" aria-live="polite"></div>
+  <div class="footer">Only approve an application you recognize. Your job records remain protected by Supabase Row Level Security. You can revoke an OAuth grant from your account's connected-app settings.</div>
+</main>
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
+
+  const SUPABASE_URL = "https://ngsjbvrdtqitwdwzlbcn.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_WuH-O39pRoxxqLFxoBywuw_7CjuK3y-";
+  const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    auth: { flowType: "pkce", persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  });
+  const $ = (id) => document.getElementById(id);
+  const authorizationId = new URLSearchParams(location.search).get("authorization_id");
+  let busy = false;
+
+  function setStatus(message, isError = false) {
+    const el = $("status");
+    el.textContent = message;
+    el.classList.toggle("error", isError);
+  }
+  function setBusy(value) {
+    busy = value;
+    ["sign-in", "magic-link", "approve", "deny"].forEach(id => {
+      const el = $(id);
+      if (el) el.disabled = value;
+    });
+  }
+  function show(id) { $(id).classList.remove("hidden"); }
+  function hide(id) { $(id).classList.add("hidden"); }
+  function safeOrigin(value) {
+    try { return new URL(value).origin; } catch { return "OAuth client"; }
+  }
+  function renderScopes(scope) {
+    const list = $("scope-list");
+    list.replaceChildren();
+    const scopes = typeof scope === "string" ? scope.trim().split(/\s+/).filter(Boolean) : [];
+    const labels = {
+      openid: "Verify your account identity",
+      email: "Access your account email address",
+      profile: "Access basic account profile claims",
+      phone: "Access your verified phone number"
+    };
+    (scopes.length ? scopes : ["No OAuth scopes were explicitly listed by the client"]).forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = labels[item] ? `${item} — ${labels[item]}` : item;
+      list.appendChild(li);
+    });
+  }
+
+  async function loadConsent() {
+    if (!authorizationId) {
+      setStatus("Missing authorization_id. Reopen the connection from ChatGPT.", true);
+      setStatus("No active authorization request was supplied. This page cannot approve access on its own.", true);
+      return;
+    }
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      show("login-panel");
+      setStatus("Sign in with the email address belonging to your existing Global Job Hunter account.");
+      return;
+    }
+
+    const { data, error } = await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
+    if (error || !data) {
+      setStatus(error?.message || "This authorization request is invalid or has expired. Start the connection again.", true);
+      return;
+    }
+    if (!("authorization_id" in data)) {
+      if (data.redirect_url) location.assign(data.redirect_url);
+      else setStatus("The OAuth server returned an unexpected response.", true);
+      return;
+    }
+
+    const client = data.client || {};
+    $("client-name").textContent = client.name || "Connected application";
+    $("client-origin").textContent = data.redirect_uri ? `Redirect destination: ${data.redirect_uri}` : "OAuth client details";
+    renderScopes(data.scope);
+    hide("login-panel");
+    show("consent-panel");
+    setStatus(`Signed in as ${user.email || "your candidate account"}. Review the access before approving.`);
+  }
+
+  $("login-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (busy) return;
+    const email = $("email").value.trim();
+    const password = $("password").value;
+    if (!email || !password) return;
+    setBusy(true); setStatus("Signing in securely…");
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setBusy(false);
+    if (error) { setStatus(error.message, true); return; }
+    $("password").value = "";
+    hide("login-panel");
+    await loadConsent();
+  });
+
+  $("magic-link").addEventListener("click", async () => {
+    if (busy) return;
+    const email = $("email").value.trim();
+    if (!email) { setStatus("Enter your account email address first.", true); return; }
+    setBusy(true); setStatus("Sending a one-time sign-in link…");
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: false, emailRedirectTo: location.href }
+    });
+    setBusy(false);
+    setStatus(error ? error.message : "Sign-in link sent. Open it from the same browser to continue this authorization.", Boolean(error));
+  });
+
+  async function decide(approve) {
+    if (busy || !authorizationId) return;
+    setBusy(true); setStatus(approve ? "Approving access…" : "Denying access…");
+    const method = approve ? "approveAuthorization" : "denyAuthorization";
+    const { data, error } = await supabase.auth.oauth[method](authorizationId);
+    if (error) { setBusy(false); setStatus(error.message, true); return; }
+    if (!data?.redirect_url) { setBusy(false); setStatus("No redirect URL was returned. Start the authorization again.", true); return; }
+    setStatus(approve ? "Access approved. Returning to the requesting application…" : "Access denied. Returning to the requesting application…");
+    location.assign(data.redirect_url);
+  }
+  $("approve").addEventListener("click", () => decide(true));
+  $("deny").addEventListener("click", () => decide(false));
+
+  loadConsent().catch(error => setStatus(error?.message || "Unable to load the authorization request.", true));
+</script>
+</body>
+</html>
